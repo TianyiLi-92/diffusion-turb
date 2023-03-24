@@ -1,0 +1,22 @@
+#!/bin/bash
+#SBATCH -p std
+#SBATCH --time 24:00:00      # format: HH:MM:SS
+##SBATCH -w a100-2           # ask for specific host
+#SBATCH -N 1                 # xxx node
+#SBATCH --ntasks-per-node=4  # xxx core per node
+#SBATCH --gres=gpu:a100:1    # xxx gpus per node
+#SBATCH --mem=256000         # memory per node out of xxx MB
+#SBATCH --job-name=DT-model
+##SBATCH --mail-type=ALL
+##SBATCH --mail-user=<user_email>
+
+echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"
+
+source ~/.bashrc
+conda activate diffusion-turb
+
+export OPENAI_LOGDIR="/mnt/petaStor/li/Job/diffusion-turb/velocity_module-IS64-NC128-NRB3-DS4000-NSlinear-LR1e-4-BS256-model"
+
+MODEL_FLAGS="--image_size 64 --in_channels 1 --num_channels 128 --num_res_blocks 3"
+
+python ../scripts/turb_model.py $MODEL_FLAGS
